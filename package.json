@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.1",
+    "morgan": "^1.10.0",
+    "mssql": "^11.0.1",
+    "nodemon": "^3.1.7",
+    "sequelize": "^6.37.3"
+  },
+  "name": "tata_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js --host $(node getIp.js)"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
