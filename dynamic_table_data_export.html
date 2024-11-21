@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <title>Dynamic Table with Export</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .export-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Dynamic Table Example</h1>
+        <div class="export-buttons">
+            <button class="btn btn-primary mr-2" onclick="exportToCSV()">Export to CSV</button>
+            <button class="btn btn-success mr-2" onclick="exportToExcel()">Export to Excel</button>
+            <button class="btn btn-danger" onclick="exportToPDF()">Export to PDF</button>
+        </div>
+        <table id="dynamicTable"></table>
+    </div>
+    <script>
+        let tableData = [];
+
+        async function fetchData() {
+            try {
+                // Replace this with your actual endpoint
+                const response = await fetch('http://localhost:3000/first/fr_read');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                tableData = await response.json();
+                console.log('tableData:', tableData);
+
+                // Populate the table with the fetched data
+                populateTable(tableData);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        function populateTable(data) {
+            const table = document.getElementById("dynamicTable");
+
+            // Clear existing table content (if any)
+            table.innerHTML = '';
+
+            // Generate table headers
+            const headers = Object.keys(data[0]); // Use the keys of the first object for headers
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+
+            headers.forEach(header => {
+                const th = document.createElement("th");
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Generate table rows
+            const tbody = document.createElement("tbody");
+
+            data.forEach(rowData => {
+                const tr = document.createElement("tr");
+
+                headers.forEach(header => {
+                    const td = document.createElement("td");
+                    td.textContent = typeof rowData[header] === 'object' ? JSON.stringify(rowData[header]) : rowData[header];
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const headers = Object.keys(tableData[0]).join(",") + "\n";
+            const rows = tableData.map(row => Object.values(row).join(",")).join("\n");
+            csvContent += headers + rows;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "table_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            const worksheet = XLSX.utils.json_to_sheet(tableData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "TableData");
+            XLSX.writeFile(workbook, "table_data.xlsx");
+        }
+
+        // Export to PDF
+        // Export to PDF
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf; // Access jsPDF from the window object
+            const rows = tableData.map(row => Object.values(row));
+            const headers = Object.keys(tableData[0]);
+            const pdfData = [headers, ...rows];
+
+            const doc = new jsPDF(); // Create a new jsPDF instance
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+            });
+            doc.save('table_data.pdf');
+        }
+
+
+        // Fetch data and populate table on window load
+        window.onload = () => {
+            fetchData();
+        };
+    </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+</body>
+</html>

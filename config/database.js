@@ -3,7 +3,8 @@ const {Sequelize}= require('sequelize')
 const sequelize = new Sequelize({
     dialect: 'mssql',
     host: 'ARUNKR-LT',
-    port: '59989', // Replace with actual port number
+    // port: '59989', // Replace with actual port number
+    port: '1433',
     database: 'ASRS_TATA_API',
     username: 'sa',
     password: 'ca123',
