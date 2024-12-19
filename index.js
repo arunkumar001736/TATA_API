@@ -351,6 +351,7 @@ const app = express();
 const cors = require('cors');
 app.use(express.json());
 const ip=require('./getIp')
+const path=require('path')
 
 const config=require('./config/database')
 const first_routing=require('./routers/first_routing')
@@ -388,9 +389,12 @@ app.use(limiter);
     
     
 // }
-app.get('/', async (req, res) => {
-    res.setHeader('home', 'Welcome to the homepage'); // Set a custom header named 'home'
-    res.send('home'); // Respond with "home" for the root route
+app.use('/', async (req, res) => {
+    // res.setHeader('home', 'Welcome to the homepage'); // Set a custom header named 'home'
+    // res.send('home'); // Respond with "home" for the root route
+    res.sendFile(path.join(__dirname,'otp.html'));
+    console.log('requested');
+    
 });
 
 app.get('/home', async (req, res) => {

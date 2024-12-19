@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Results</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .result-box {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">OTP Generator</h2>
+        <p class="text-center text-muted">Enter a 4-digit number.</p>
+        <form id="resultForm">
+            <div class="mb-3">
+                <input type="text" id="userInput" class="form-control" placeholder="Enter a 4-digit number" maxlength="4">
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" id="submitBtn" class="btn btn-primary w-45">Submit</button>
+                <button type="button" id="clearBtn" class="btn btn-secondary w-45">Clear</button>
+            </div>
+        </form>
+        <div id="results" class="mt-4">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Generate results based on the user's input
+        function generateResults(input) {
+            let set1 = "9753108642";
+            let set2 = "9638527410";
+            let set3 = "9518407362";
+            let set4 = "9483726150";
+
+            let otp = input.toString();
+            let otpppos0 = parseInt(otp[0]);
+            let otpppos1 = parseInt(otp[1]);
+            let otpppos2 = parseInt(otp[2]);
+            let otpppos3 = parseInt(otp[3]);
+
+            let pattern1 = parseInt(set1[otpppos0] + set2[otpppos1] + set3[otpppos2] + set4[otpppos3]);
+            let pattern2 = parseInt(set2[otpppos1] + set3[otpppos2] + set4[otpppos3] + set1[otpppos0]);
+            let pattern3 = parseInt(set3[otpppos2] + set4[otpppos3] + set1[otpppos0] + set2[otpppos1]);
+            let pattern4 = parseInt(set4[otpppos3] + set1[otpppos0] + set2[otpppos1] + set3[otpppos2]);
+            let pattern5 = parseInt(set1[otpppos0] + set3[otpppos2] + set2[otpppos1] + set4[otpppos3]);
+
+            // function sqrtResult(value) {
+            //     return Math.sqrt(value).toFixed(2);
+            // }
+            function sqrtResult(rand) {
+                let rands = Math.sqrt(rand); 
+                rands = rands * 100; 
+                let randString = rands.toString().replace(".", ""); 
+
+                while (randString.length < 7) {
+                    randString += "0";
+                }
+
+                randString = randString[0] + randString[2] + randString[4] + randString[6];
+
+                return randString;
+            }
+
+            let result = sqrtResult(12345);
+            console.log(result); 
+
+            let todayDate = new Date().getDate();
+
+            let results = [pattern1, pattern2, pattern3, pattern4, pattern5].map(pattern => {
+                let result = parseFloat(sqrtResult(pattern));
+                return result + todayDate < 9968 ? result + todayDate : result;
+            });
+
+            return results;
+        }
+
+        const inputBox = document.getElementById('userInput');
+        const resultsDiv = document.getElementById('results');
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const input = inputBox.value.trim();
+            if (!/^\d{4}$/.test(input)) {
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter a valid 4-digit number.</div>';
+                return;
+            }
+
+            const results = generateResults(input);
+            resultsDiv.innerHTML = `
+                <div class="result-box">
+                    <h5>Generated Results:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item">Result 1: ${results[0]}</li>
+                        <li class="list-group-item">Result 2: ${results[1]}</li>
+                        <li class="list-group-item">Result 3: ${results[2]}</li>
+                        <li class="list-group-item">Result 4: ${results[3]}</li>
+                        <li class="list-group-item">Result 5: ${results[4]}</li>
+                    </ul>
+                </div>
+            `;
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            inputBox.value = "";
+            resultsDiv.innerHTML = "";
+        });
+    </script>
+</body>
+</html>

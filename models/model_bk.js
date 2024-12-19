@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize');
 
 const sequelize = require('../config/database');
 
-
+ 
 
 const YourTable = sequelize.define('Data', {
     ID: {
